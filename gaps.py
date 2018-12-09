@@ -8,7 +8,6 @@ Created on Thu Oct 4 17:48:32 2018
 from fractions import Fraction 
 import math
 import sys
-import numpy as np
 from pulp import *
 
 class Fr:
