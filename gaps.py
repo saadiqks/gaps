@@ -8,7 +8,6 @@ Created on Thu Oct 4 17:48:32 2018
 from fractions import Fraction 
 import math
 import sys
-import numpy as np
 from pulp import *
 
 class Fr:
@@ -60,7 +59,7 @@ class ThreeShareException(Exception):
 class BillCaseException(Exception):
     pass
 
-# Works.
+
 class Interval: 
     type_list = [0,0,0]
       
@@ -85,7 +84,7 @@ class Interval:
         else:
             return "(%s [no shares] %s)" % (self.low, self.high)
 
-# Works.                
+                
 class Student:
     def __init__(self, nums, share_type):
         self.numbers = nums
@@ -118,7 +117,6 @@ class Student:
         
         return new_str
 
-# Works.
 class IntervalManager:
     def __init__(self):
         self.interval = []
@@ -257,7 +255,7 @@ class IntervalManager:
                 self.interval.insert(low_interval_index + 1, itvl)
                 self.check_same_bounds()
                    
-    # Works.
+    
     def add_interval(self, itvl):
         low_interval_index = self.find_bound(itvl.low)
         high_interval_index = self.find_bound(itvl.high)
@@ -325,6 +323,8 @@ class MuffinsAuto:
         self.turn = 1
         self.low = 0
         self.high = 0
+
+        self.easy_erik = 0
         
         if alpha_den % self.share.denominator == 0:
             self.share = self.convert(self.share, alpha_den) 
@@ -344,7 +344,7 @@ class MuffinsAuto:
     def lcm(self, a, b):
         return (a*b)//math.gcd(a, b)   
 
-    # Works.
+    
     def combination_util(self, arr, data, start, end, index, r, students):
         if index == r:
             for j in range(r):
@@ -357,13 +357,13 @@ class MuffinsAuto:
             self.combination_util(arr, data, i+1, end, index+1, r, students)
             i += 1
             
-    # Works.
+    
     def print_combination(self, arr, n, r, students):
         data = [0]*r
         
         self.combination_util(arr, data, 0, n-1, 0, r, students)
         
-    # Works.
+    
     def combination(self, num_intervals, share_type):
         students = []
         
@@ -378,7 +378,7 @@ class MuffinsAuto:
         self.print_combination(arr, len(arr), share_type, students)
         return students
         
-    # Works.
+    
     def three_share_test(self):
         super_high = self.high_share + 1
         super_low = self.low_share - 1
@@ -391,7 +391,7 @@ class MuffinsAuto:
         if is_less_one or is_less_two:
             raise ThreeShareException("DARN, THIS IS THE CASE BILL WARNED ME ABOUT WHERE THERE ARE THREE NUMBERS-OF-SHARES.")
        
-    # Works.     
+         
     def calcS(self):
         pieces = 2 * self.m
         self.low_share = pieces//self.s
@@ -445,7 +445,7 @@ class MuffinsAuto:
         res = Interval(new_bound, self.subtract_from(self.alpha, Fraction(1)).numerator, 1, self.num_low_share * self.low_share)
         return res
 
-    # Works.
+    
     def find_lower_range(self):
         new_bound = (-1 *((self.high_share - 1)*self.manager.get_lowest_bound() - self.share.numerator))
         
@@ -456,7 +456,7 @@ class MuffinsAuto:
     
         return new_bound
     
-    # Works.
+    
     def set_interval(self):
         self.low = self.alpha.numerator
         res = self.subtract_from(self.alpha, Fraction(1))
@@ -464,7 +464,7 @@ class MuffinsAuto:
 
         self.manager.add_interval(Interval(self.low, self.high, 0))
         
-    # Works.
+    
     def find_blocks(self):
         temp_list = []
         
@@ -475,14 +475,14 @@ class MuffinsAuto:
         for elem in temp_list:
             self.manager.add_interval(Interval(self.alpha.denominator - elem.high, self.alpha.denominator - elem.low, 0))
     
-    # Works.
+    
     def myint(self, x):
         if x != int(x):
             return x
         else:
             return int(x) 
 
-    # Works.
+    
     def mid_point(self):
         mid = self.myint((self.manager.get_lowest_bound() + self.manager.get_highest_bound())/2) 
         index = self.manager.find_bound(mid)
@@ -490,7 +490,7 @@ class MuffinsAuto:
         itvl = Interval(elem.low, mid, elem.type, elem.num_shares)    
         self.manager.add_interval(itvl)
     
-    # Works.    
+        
     def test(self, possible, share_type): 
         lst = []
         temp_list = []
@@ -520,7 +520,7 @@ class MuffinsAuto:
                     
         return lst
         
-    # Works.
+    
     def find_duplicates(self, list1):
         final_list = []
         
@@ -536,7 +536,7 @@ class MuffinsAuto:
                 
         return final_list
     
-    # Works.
+    
     def maximize(self, student, focus, int_type):
         itvl_type = 0
         
@@ -566,7 +566,7 @@ class MuffinsAuto:
         else:
             return new_val
         
-    # Works.
+    
     def minimize(self, student, focus, int_type):
         itvl_type = 0
         
@@ -599,7 +599,6 @@ class MuffinsAuto:
         else:
             return new_val
         
-    # Works.
     def refine(self, lst, int_type):
         itvl_type = 0
         if int_type == self.high_share:
@@ -612,7 +611,7 @@ class MuffinsAuto:
         added = False
 
         for j in range(1, len(intervals) + 1):
-            lowest_low = intervals[j-1].low
+            lowest_low = 0
             highest_high = intervals[j-1].high
             invalid = False
 
@@ -622,7 +621,7 @@ class MuffinsAuto:
                 
                 if lst[i].contains(j):
                     if self.max_or_min(lst[i], itvl_type, j) == 1:
-                        if dmin != -1 and dmin <= highest_high and (dmin > lowest_low or lowest_low == intervals[j-1].low):
+                        if dmin != -1 and dmin <= highest_high and (dmin > lowest_low or lowest_low == 0):
                             lowest_low = dmin
                         elif dmin != -1 and dmin > highest_high and (dmax != -1 and (dmax < highest_high or highest_high == intervals[j-1].high)):
                             highest_high = dmax
@@ -631,7 +630,7 @@ class MuffinsAuto:
                     else:
                         if dmax != -1 and dmax >= lowest_low and (dmax < highest_high or highest_high == intervals[j-1].high):
                             highest_high = dmax
-                        elif dmax != -1 and dmax < lowest_low and (dmin != -1 and (dmin > lowest_low or lowest_low == intervals[j-1].low)):
+                        elif dmax != -1 and dmax < lowest_low and (dmin != -1 and (dmin > lowest_low or lowest_low == 0)):
                             lowest_low = dmin
                         elif dmax == -1:
                             invalid = True
@@ -643,13 +642,13 @@ class MuffinsAuto:
         for elem in to_be_added:
             elem.low = self.myint(elem.low)
             elem.high = self.myint(elem.high)
-            print("There are no shares in: (" + str(elem.low) + ", " + str(elem.high) + ")")              
+            print("There are no shares in: (" + str(elem.low) + ", " + str(elem.high) + ")")           
 
             self.manager.add_interval(Interval(elem.low, elem.high, 0))
             self.buddy_one(Interval(elem.low, elem.high, 0))
             index_itvl = self.manager.find_interval(Interval(elem.low, elem.high, 0))
             index_itvl_buddy = self.manager.find_interval(Interval(self.share.denominator - elem.high, self.share.denominator - elem.low, 0))
-                
+
             if self.manager.get(index_itvl + 1).type == 1 and self.low_share == 2 or self.manager.get(index_itvl - 1).type == 1 and self.low_share == 2:
                 self.match_gap(self.manager.get(index_itvl))
             elif self.manager.get(index_itvl_buddy + 1).type == 1 and self.low_share == 2 or self.manager.get(index_itvl_buddy - 1).type == 1 and self.low_share == 2:
@@ -661,7 +660,8 @@ class MuffinsAuto:
             print("No gaps were found.")
             self.is_more_gaps = False
 
-    # Works.
+        self.easy_erik += 1
+    
     def buddy_one(self, itvl):
         has_buddy = False
         for j in range(len(self.manager.get_all())):
@@ -675,8 +675,7 @@ class MuffinsAuto:
             print("There are no shares in (" + str(bound1)  + ", " + str(bound2) + ") as a result of buddying.")
    
             self.manager.add_interval(Interval(self.share.denominator - itvl.high, self.share.denominator - itvl.low, itvl.type, itvl.num_shares))
-
-    # Works.
+    
     def high_interval_students(self, num_high_interval):
         list_of_high_share = self.combination(num_high_interval, self.high_share)
         high_list = self.test(list_of_high_share, self.high_share)
@@ -693,8 +692,7 @@ class MuffinsAuto:
             i += self.high_share
 
         return students
-
-    # Works.
+ 
     def low_interval_students(self, num_low_interval):
         list_of_low_share = self.combination(num_low_interval, self.low_share)
         low_list = self.test(list_of_low_share, self.low_share)
@@ -711,8 +709,7 @@ class MuffinsAuto:
             i += self.low_share
 
         return students
-
-    # Works.
+    
     def calc_num_high(self):
         num_high_interval = 0
         for elem in self.manager.get_all():
@@ -721,7 +718,6 @@ class MuffinsAuto:
 
         return num_high_interval
 
-    # Works.
     def calc_num_low(self):
         num_low_interval = 0
         for elem in self.manager.get_all():
@@ -730,7 +726,6 @@ class MuffinsAuto:
 
         return num_low_interval
 
-    # Works.
     def max_or_min(self, s, int_type, focus):
         new_type = self.high_share if int_type == 2 else self.low_share
 
@@ -751,8 +746,7 @@ class MuffinsAuto:
             return 1
         else:
             return 2
-
-    # Works.
+    
     def find_buddy_match_definitions(self, full_list, type_list, itvl):
         buddy_in_match = self.manager.get(self.find_buddy_definitions(full_list, itvl))
         match_of_buddy_index = self.manager.find_interval(Interval(self.share.numerator - buddy_in_match.high, self.share.numerator - buddy_in_match.low, buddy_in_match.type))
@@ -763,8 +757,7 @@ class MuffinsAuto:
             return index
         else:
             return -1
-
-    # Works.
+    
     def definitions(self, d_type):
         if d_type == 2:
             lst = self.manager.get_all_type(d_type)
@@ -851,7 +844,7 @@ class MuffinsAuto:
                 else:
                     print()
 
-    # Works.
+    
     def find_buddy_definitions(self, lst, itvl):
         index = -1
         for i in range(len(lst)):
@@ -860,7 +853,7 @@ class MuffinsAuto:
 
         return index
 
-    # Works.
+    
     def new_intervals(self):
         num_high_interval = self.calc_num_high()
         num_low_interval = self.calc_num_low()
@@ -880,8 +873,7 @@ class MuffinsAuto:
             self.refine(new_student_list, self.low_share)
 
         return new_student_list
-
-    # Works.
+    
     def new_intervals2(self):
         num_high_interval = self.calc_num_high()
         num_low_interval = self.calc_num_low()
@@ -901,8 +893,7 @@ class MuffinsAuto:
             self.refine(new_student_list, self.low_share)
 
         return new_student_list
-
-    # Works.
+    
     def final_share_buddy(self):
         int_type = 0
 
@@ -925,7 +916,7 @@ class MuffinsAuto:
 
         print()
 
-    # Works.
+    
     def find_initial_equations(self, int_type):
         interval_list = self.manager.get_all_type(int_type)
         final_list = []
@@ -990,7 +981,6 @@ class MuffinsAuto:
 
         return final_list
 
-    # Works.
     def find_initial_equations2(self, int_type):
         interval_list = self.manager.get_all_type(int_type)
 
@@ -1143,7 +1133,6 @@ class MuffinsAuto:
 
         return final_list
     
-    # Works.
     def match_gap(self, itvl):
         numer = self.share.numerator 
         self.manager.add_interval(Interval(numer - itvl.high, numer - itvl.low, 0))
@@ -1153,8 +1142,7 @@ class MuffinsAuto:
         print("There are no shares in (" + str(bound1)  + ", " + str(bound2) + ") as a result of match.")
         
         self.buddy_one(Interval(numer - itvl.high, numer - itvl.low, 0))
-
-    # Works.
+    
     def derive_equations(self, lst, initial_list):
         final_list = []
 
@@ -1302,9 +1290,8 @@ class MuffinsAuto:
 
                 final_list.append(Equation(arg1, arg2))
 
-        return final_list
-          
-    # Works.
+        return final_list 
+    
     def convert_arg1(self, initial_list, lst):
         final_list = []
 
@@ -1323,8 +1310,7 @@ class MuffinsAuto:
             final_list.append(eq)
 
         return final_list
-
-    # Works.
+    
     def convert_arg2(self, initial_list):
         final_list = []
 
@@ -1332,8 +1318,7 @@ class MuffinsAuto:
             final_list.append(i.arg2[0].variable)
 
         return final_list
-
-    # Works.
+    
     def find_student(self, lst, s):
         index = -1
 
@@ -1342,8 +1327,7 @@ class MuffinsAuto:
                 index = i
 
         return index 
-
-    # Works.
+    
     def find_student_in_equation(self, arg1, s):
         index = -1
 
@@ -1353,7 +1337,6 @@ class MuffinsAuto:
 
         return index
 
-    # Works.
     def shift_one_side(self, initial_list):
         for elem in initial_list:
             if (len(elem.arg1) == 0 and type(elem.arg2[0].variable) == Student) or type(elem.arg1[0].variable) == Student and type(elem.arg2[0].variable) == Student: 
@@ -1372,8 +1355,7 @@ class MuffinsAuto:
                 elem.arg2.append(Term(1, 0.0))
 
         return initial_list
-
-    # Works.
+    
     def linear_equations(self, lst, int_type, turn):
         initial = []
 
@@ -1384,7 +1366,7 @@ class MuffinsAuto:
 
         derived = self.derive_equations(lst, initial)
 
-        self.shift_one_side(derived)
+        self.shift_one_side(derived) 
 
         for i in range(len(lst)):
             print("Let " + "var[" + str(i) + "] = " + str(lst[i]))
@@ -1415,9 +1397,10 @@ class MuffinsAuto:
             mod += sum([row[i]*variables[i] for i in range(len(row))]) == rhs 
         
         mod.solve()
+        print(LpStatus[mod.status])
 
         if not mod.objective:
-            print("Value of objective function: 1.0E30")
+            print("Value of objective function:", mod.objective)
         [print("Value of var["+ str(i) + "] = " + str(variables[i + 1].value())) for i in range(len(A[0]) - 1)]  
         var = [variables[i + 1].value() for i in range(len(A[0]) - 1)]
 
@@ -1428,18 +1411,12 @@ class MuffinsAuto:
         if (var == [0.0]*(len(A[0]) - 1) or self.contains_floats(var)):
             print("Solutions: 0")
             return 0
-        elif not self.verify(A,x,b):
+        elif LpStatus[mod.status] == "Infeasible":
             print("Solutions: 0")
             return 0
         else:
             print("Solutions: 1") 
             return 1
-
-    # Returns if the solution actually works.
-    def verify(self, A, x, b):
-        res = np.matmul(A,x)
-        bools = res == b
-        return not (False in bools)
 
     def contains_floats(self, arr):
         flag = False
@@ -1449,7 +1426,6 @@ class MuffinsAuto:
 
         return flag
 
-    # Works.
     def buddy_two(self, itvl):
         has_buddy = False
         
@@ -1460,7 +1436,6 @@ class MuffinsAuto:
         if not has_buddy:
             self.manager.add_interval(Interval(self.share.denominator - itvl.high, self.share.denominator - itvl.low, itvl.type, itvl.num_shares))
                      
-    # Works.      
     def match(self):
         midpoint = 0
         
@@ -1505,9 +1480,8 @@ class MuffinsAuto:
                     print("All " + str(self.low_share) + " shares < than the midpoint (" + str(midpoint) + ")")
                     print("Contradiction. " + str(self.low_share) + " * s" + str(self.low_share) + " > m since " + str(self.low_share) + " * " + str(self.num_low_share) + " > " + str(self.m))
                     
-        return isB
-              
-    # Works.      
+        return isB    
+          
     def main(self):
         try:
             self.three_share_test()
@@ -1544,7 +1518,7 @@ class MuffinsAuto:
                 print("%s-share interval: %s" % (self.high_share, itvl_high))
             else:
                 print("There are no intervals with %s-shares" % (self.high_share))
-                
+
             self.find_blocks()
             try:
                 if not self.is_bill(): 
@@ -1600,10 +1574,12 @@ class MuffinsAuto:
                                     print("Tried f(%s, %s) \\le %s and succeeded YEAH-BILL2" % (self.m, self.s, self.alpha))
                             else:
                                 print("Tried f(%s, %s) \\le %s and failed BOO-ERIK FAILED" % (self.m, self.s, self.alpha))
-                                print()
                         elif num_solutions == 0:
                             print()
-                            print("Tried f(%s, %s) \\le %s and succeeded YEAH-ERIK" % (self.m, self.s, self.alpha))
+                            if self.easy_erik == 1:
+                                print("Tried f(%s, %s) \\le %s and succeeded YEAH-EERIK" % (self.m, self.s, self.alpha))
+                            else:
+                                print("Tried f(%s, %s) \\le %s and succeeded YEAH-ERIK" % (self.m, self.s, self.alpha))
                         elif num_solutions == -1:
                             self.is_more_gaps = True
                             num_high_interval = self.calc_num_high()
@@ -1642,8 +1618,22 @@ default_stdout = sys.stdout
 file_handle = open('output.txt', 'w')
 try:
     sys.stdout = file_handle 
-    muffin = MuffinsAuto(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]))
-    muffin.main()
+    args = sys.argv
+
+    if len(args) == 5:
+        muffin = MuffinsAuto(int(args[1]), int(args[2]), int(args[3]), int(args[4]))
+        muffin.main()
+    elif len(args) == 2:
+        with open(args[1], "r") as ins:
+            arr = []
+            for line in ins:
+                arr.append(line.rstrip('\n').split())
+
+        for elem in arr:
+            file = open(elem[0]+"-"+elem[1]+'.txt', 'w')
+            sys.stdout = file 
+            muffin = MuffinsAuto(int(elem[0]), int(elem[1]), int(elem[2]), int(elem[3]))
+            muffin.main()
 finally:
     # Restores stdout, even if an exception occurs.
     sys.stdout = default_stdout
