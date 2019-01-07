@@ -8,6 +8,7 @@ Created on Thu Oct 4 17:48:32 2018
 from fractions import Fraction 
 import math
 import sys
+import os
 from pulp import *
 
 class Fr:
@@ -1630,10 +1631,28 @@ try:
                 arr.append(line.rstrip('\n').split())
 
         for elem in arr:
-            file = open(elem[0]+"-"+elem[1]+'.txt', 'w')
+            name = elem[0]+"-"+elem[1]+'.txt'
+            file = open(name, 'w')
             sys.stdout = file 
+
             muffin = MuffinsAuto(int(elem[0]), int(elem[1]), int(elem[2]), int(elem[3]))
             muffin.main()
+
+            file.close()
+
+            with open(name, 'r') as output:
+                data = output.read()
+
+            if "EERIK" in data:
+                os.rename(name, elem[0]+"-"+elem[1]+'.EERIK.txt')
+            elif "fail" in data:
+                os.rename(name, elem[0]+"-"+elem[1]+'.OPEN.txt')
+            elif "ERIK" in data:
+                os.rename(name, elem[0]+"-"+elem[1]+'.ERIK.txt')
+            elif "BILL1" in data:
+                os.rename(name, elem[0]+"-"+elem[1]+'.BILL1.txt')
+            elif "BILL2" in data:
+                os.rename(name, elem[0]+"-"+elem[1]+'.BILL2.txt')
 finally:
     # Restores stdout, even if an exception occurs.
     sys.stdout = default_stdout
