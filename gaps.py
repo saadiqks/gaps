@@ -650,10 +650,10 @@ class MuffinsAuto:
             index_itvl = self.manager.find_interval(Interval(elem.low, elem.high, 0))
             index_itvl_buddy = self.manager.find_interval(Interval(self.share.denominator - elem.high, self.share.denominator - elem.low, 0))
 
-            if self.manager.get(index_itvl + 1).type == 1 and self.low_share == 2 or self.manager.get(index_itvl - 1).type == 1 and self.low_share == 2:
-                self.match_gap(self.manager.get(index_itvl))
-            elif self.manager.get(index_itvl_buddy + 1).type == 1 and self.low_share == 2 or self.manager.get(index_itvl_buddy - 1).type == 1 and self.low_share == 2:
-                self.match_gap(self.manager.get(index_itvl_buddy))
+            # if self.manager.get(index_itvl + 1).type == 1 and self.low_share == 2 or self.manager.get(index_itvl - 1).type == 1 and self.low_share == 2:
+            self.match_gap(self.manager.get(index_itvl))
+            # elif self.manager.get(index_itvl_buddy + 1).type == 1 and self.low_share == 2 or self.manager.get(index_itvl_buddy - 1).type == 1 and self.low_share == 2:
+            self.match_gap(self.manager.get(index_itvl_buddy))
                 
             added = True
             
