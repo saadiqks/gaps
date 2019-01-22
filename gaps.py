@@ -562,10 +562,7 @@ class MuffinsAuto:
             
         new_val = self.share.numerator - subtrahend
         
-        if new_val < intervals[0].low:
-            return -1
-        else:
-            return new_val
+        return new_val
         
     
     def minimize(self, student, focus, int_type):
@@ -594,11 +591,8 @@ class MuffinsAuto:
         
         while (self.share.numerator - subtrahend - new_val) > 0:
             new_val += 0.5
-            
-        if new_val > intervals[len(intervals) - 1].high:
-            return -1
-        else:
-            return new_val
+           
+        return new_val
         
     def refine(self, lst, int_type):
         itvl_type = 0
@@ -610,36 +604,27 @@ class MuffinsAuto:
         intervals = self.manager.get_all_type(itvl_type)
         to_be_added = []
         added = False
-
+        
         for j in range(1, len(intervals) + 1):
-            lowest_low = 0
-            highest_high = intervals[j-1].high
-            invalid = False
+            upper = []
+            lower = []
 
-            for i in range(len(lst)):
-                dmax = self.maximize(lst[i], j, int_type)
-                dmin = self.minimize(lst[i], j, int_type)
-                
-                if lst[i].contains(j):
-                    if self.max_or_min(lst[i], itvl_type, j) == 1:
-                        if dmin != -1 and dmin <= highest_high and (dmin > lowest_low or lowest_low == 0):
-                            lowest_low = dmin
-                        elif dmin != -1 and dmin > highest_high and (dmax != -1 and (dmax < highest_high or highest_high == intervals[j-1].high)):
-                            highest_high = dmax
-                        elif dmin == -1:
-                            invalid = True
-                    else:
-                        if dmax != -1 and dmax >= lowest_low and (dmax < highest_high or highest_high == intervals[j-1].high):
-                            highest_high = dmax
-                        elif dmax != -1 and dmax < lowest_low and (dmin != -1 and (dmin > lowest_low or lowest_low == 0)):
-                            lowest_low = dmin
-                        elif dmax == -1:
-                            invalid = True
+            for elem in lst:
+                if elem.contains(j):
+                    dmax = self.maximize(elem, j, int_type)
+                    dmin = self.minimize(elem, j, int_type)
 
-            if (lowest_low != intervals[j-1].low or highest_high != intervals[j-1].high) and intervals[j-1].contains_bound(lowest_low) and intervals[j-1].contains_bound(highest_high) and not invalid:
-                if highest_high > lowest_low:
-                    to_be_added.append(Interval(lowest_low, highest_high, 0))
+                    lower.append(dmax)
+                    upper.append(dmin)
 
+            list.sort(upper)
+            list.sort(lower)
+
+            for i in range(len(lower) - 1):
+                if upper[i] < lower[i + 1]:
+                    to_be_added.append(Interval(upper[i], lower[i + 1], 0))
+                    break 
+        
         for elem in to_be_added:
             elem.low = self.myint(elem.low)
             elem.high = self.myint(elem.high)
