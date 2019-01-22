@@ -5,11 +5,11 @@ Created on Thu Oct 4 17:48:32 2018
 
 @author: saadiq 
 """
-from fractions import Fraction 
+from fractions import Fraction
+from pulp import * 
 import math
 import sys
 import os
-from pulp import *
 
 class Fr:
     def __init__(self, n = 1, d = 1):
@@ -345,7 +345,6 @@ class MuffinsAuto:
     def lcm(self, a, b):
         return (a*b)//math.gcd(a, b)   
 
-    
     def combination_util(self, arr, data, start, end, index, r, students):
         if index == r:
             for j in range(r):
@@ -356,15 +355,13 @@ class MuffinsAuto:
         while (i <= end and end - i + 1 >= r - index):
             data[index] = arr[i]
             self.combination_util(arr, data, i+1, end, index+1, r, students)
-            i += 1
-            
+            i += 1   
     
     def print_combination(self, arr, n, r, students):
         data = [0]*r
         
         self.combination_util(arr, data, 0, n-1, 0, r, students)
         
-    
     def combination(self, num_intervals, share_type):
         students = []
         
@@ -379,7 +376,6 @@ class MuffinsAuto:
         self.print_combination(arr, len(arr), share_type, students)
         return students
         
-    
     def three_share_test(self):
         super_high = self.high_share + 1
         super_low = self.low_share - 1
@@ -391,7 +387,6 @@ class MuffinsAuto:
         
         if is_less_one or is_less_two:
             raise ThreeShareException("DARN, THIS IS THE CASE BILL WARNED ME ABOUT WHERE THERE ARE THREE NUMBERS-OF-SHARES.")
-       
          
     def calcS(self):
         pieces = 2 * self.m
@@ -410,13 +405,17 @@ class MuffinsAuto:
         else:
             self.num_low_share = x
             self.num_high_share = y
-            
+    
         alpha_decimal = self.alpha.numerator/self.alpha.denominator
+
+        reduced_alpha = self.alpha.get_fraction()
         
-        print("Try to prove f(%s, %s) <= %s (%s)" % (self.m, self.s, self.alpha, alpha_decimal))
+        if math.gcd(self.alpha.numerator, self.alpha.denominator) == 1:
+            print("Try to prove f(%s, %s) <= %s (%s)" % (self.m, self.s, self.alpha, alpha_decimal))
+        else:
+            print("Try to prove f(%s, %s) <= %s = %s (%s)" % (self.m, self.s, reduced_alpha, self.alpha, alpha_decimal))
         
-        if (self.m != self.share.numerator):
-            print("Note that %s/%s = %s" % (self.m, self.s, self.share))    
+        print("Note that %s/%s = %s" % (self.m, self.s, self.share))    
         print("s%s = %s" %(self.low_share, self.num_low_share))
         print("s%s = %s" %(self.high_share, self.num_high_share))
         
@@ -445,8 +444,7 @@ class MuffinsAuto:
             
         res = Interval(new_bound, self.subtract_from(self.alpha, Fraction(1)).numerator, 1, self.num_low_share * self.low_share)
         return res
-
-    
+ 
     def find_lower_range(self):
         new_bound = (-1 *((self.high_share - 1)*self.manager.get_lowest_bound() - self.share.numerator))
         
@@ -457,7 +455,6 @@ class MuffinsAuto:
     
         return new_bound
     
-    
     def set_interval(self):
         self.low = self.alpha.numerator
         res = self.subtract_from(self.alpha, Fraction(1))
@@ -465,7 +462,6 @@ class MuffinsAuto:
 
         self.manager.add_interval(Interval(self.low, self.high, 0))
         
-    
     def find_blocks(self):
         temp_list = []
         
@@ -475,22 +471,19 @@ class MuffinsAuto:
                 
         for elem in temp_list:
             self.manager.add_interval(Interval(self.alpha.denominator - elem.high, self.alpha.denominator - elem.low, 0))
-    
-    
+        
     def myint(self, x):
         if x != int(x):
             return x
         else:
             return int(x) 
 
-    
     def mid_point(self):
         mid = self.myint((self.manager.get_lowest_bound() + self.manager.get_highest_bound())/2) 
         index = self.manager.find_bound(mid)
         elem = self.manager.get(index)    
         itvl = Interval(elem.low, mid, elem.type, elem.num_shares)    
         self.manager.add_interval(itvl)
-    
         
     def test(self, possible, share_type): 
         lst = []
@@ -521,7 +514,6 @@ class MuffinsAuto:
                     
         return lst
         
-    
     def find_duplicates(self, list1):
         final_list = []
         
@@ -536,7 +528,6 @@ class MuffinsAuto:
                 final_list.append(list1[i])
                 
         return final_list
-    
     
     def maximize(self, student, focus, int_type):
         itvl_type = 0
@@ -564,7 +555,6 @@ class MuffinsAuto:
         
         return new_val
         
-    
     def minimize(self, student, focus, int_type):
         itvl_type = 0
         
@@ -1387,7 +1377,6 @@ class MuffinsAuto:
 
         if not mod.objective:
             print("Value of objective function:", mod.objective)
-        [print("Value of var["+ str(i) + "] = " + str(variables[i + 1].value())) for i in range(len(A[0]) - 1)]  
         var = [variables[i + 1].value() for i in range(len(A[0]) - 1)]
 
         x = [variables[i+1].value() for i in range(len(A[0]) - 1)]
@@ -1402,6 +1391,7 @@ class MuffinsAuto:
             return 0
         else:
             print("Solutions: 1") 
+            [print("Value of var["+ str(i) + "] = " + str(variables[i + 1].value())) for i in range(len(A[0]) - 1)]  
             return 1
 
     def contains_floats(self, arr):
@@ -1509,7 +1499,7 @@ class MuffinsAuto:
             try:
                 if not self.is_bill(): 
                     if (len(self.manager.get_all()) == 2 and self.manager.get(0).high > self.manager.get(1).low):
-                        print("Tried f(" + str(self.m) + "," + str(self.s) + "\\le " + str(self.alpha) + " and failed BOO-overlapping intervals") 
+                        print("Tried f(" + str(self.m) + "," + str(self.s) + "\\le " + str(self.alpha) + " and failed BOO-overlapping intervals", end="") 
                     else:
                         self.mid_point()
                         self.final_share_buddy()
@@ -1531,7 +1521,7 @@ class MuffinsAuto:
                         elif self.calc_num_high() > self.calc_num_low():
                             int_type = 2    
                         else:
-                            print("EQUAL NUMBER OF INTERVALS OF BOTH SHARE NUMBERS?")
+                            print("EQUAL NUMBER OF INTERVALS OF BOTH SHARE NUMBERS?", end="")
                         
                         num_solutions = -1
                         
@@ -1557,15 +1547,15 @@ class MuffinsAuto:
 
                                 if num_sol != 1:
                                     print()
-                                    print("Tried f(%s, %s) \\le %s and succeeded YEAH-BILL2" % (self.m, self.s, self.alpha))
+                                    print("Tried f(%s, %s) \\le %s and succeeded YEAH-BILL2" % (self.m, self.s, self.alpha), end="")
                             else:
-                                print("Tried f(%s, %s) \\le %s and failed BOO-ERIK FAILED" % (self.m, self.s, self.alpha))
+                                print("Tried f(%s, %s) \\le %s and failed BOO-ERIK FAILED" % (self.m, self.s, self.alpha), end="")
                         elif num_solutions == 0:
                             print()
                             if self.easy_erik == 1:
-                                print("Tried f(%s, %s) \\le %s and succeeded YEAH-EERIK" % (self.m, self.s, self.alpha))
+                                print("Tried f(%s, %s) \\le %s and succeeded YEAH-EERIK" % (self.m, self.s, self.alpha), end="")
                             else:
-                                print("Tried f(%s, %s) \\le %s and succeeded YEAH-ERIK" % (self.m, self.s, self.alpha))
+                                print("Tried f(%s, %s) \\le %s and succeeded YEAH-ERIK" % (self.m, self.s, self.alpha), end="")
                         elif num_solutions == -1:
                             self.is_more_gaps = True
                             num_high_interval = self.calc_num_high()
@@ -1585,19 +1575,19 @@ class MuffinsAuto:
                                 num_sol = self.linear_equations(final_list, int_type, self.turn)
 
                                 if num_sol != 1:
-                                    print("WARNING: Solved by bill2 though ERIK did not work for the first set of shares")
+                                    print("WARNING: Solved by bill2 though ERIK did not work for the first set of shares", end="")
 
                             else:
-                                print("Bill 2 was attempted because there were 0 students that used the first number-of-share and subsequently failed.")
+                                print("Bill 2 was attempted because there were 0 students that used the first number-of-share and subsequently failed.", end="")
                                 print()
                 else:
                     raise BillCaseException("BILL-CASE")
 
             except BillCaseException:
-                print("Tried f(%s, %s)\\le %s and succeeded YEAH-BILL1" % (self.m, self.s, self.alpha))  
+                print("Tried f(%s, %s) \\le %s and succeeded YEAH-BILL1" % (self.m, self.s, self.alpha), end="")  
             
         except ThreeShareException:
-            print("Tried f(%s, %s) \\le %s and failed BOO-three numbers of shares" % (self.m, self.s, self.alpha))  
+            print("Tried f(%s, %s) \\le %s and failed BOO-three numbers of shares" % (self.m, self.s, self.alpha), end="")  
             print()
         
 default_stdout = sys.stdout
