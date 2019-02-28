@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Oct 4 17:48:32 2018
-
 @author: saadiq 
 """
 from fractions import Fraction
@@ -306,6 +305,10 @@ class IntervalManager:
                 self.interval[high_interval_index].low = itvl.high
                 self.interval.insert(low_interval_index + 1, itvl)
                 self.check_same_bounds()
+
+        # Handles gap of size 1 at start of program
+        if itvl.low == itvl.high:
+            self.interval.insert(1, itvl)
             
 class MuffinsAuto:
     def __init__(self, m, s, alpha_num, alpha_den):
@@ -1494,6 +1497,10 @@ class MuffinsAuto:
                 print("%s-share interval: %s" % (self.high_share, itvl_high))
             else:
                 print("There are no intervals with %s-shares" % (self.high_share))
+
+            # Checks if there is a gap of size 1 at the start.
+            if itvl_low.low == itvl_high.high:
+                self.manager.add_interval(Interval(itvl_low.low, itvl_high.high, 0))
 
             self.find_blocks()
             try:
